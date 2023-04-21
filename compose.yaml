@@ -1,0 +1,77 @@
+version: '3'
+services:
+  php:
+    image: php:8.2.2-fpm-bullseye
+    build:
+      context: ./docker/php
+    depends_on:
+      - mysql
+    volumes:
+      - './src:/var/www/html'
+      - './docker/volumes/cache/composer:/root/.cache/composer'
+      - './docker/volumes/profiling/php:/var/lib/php/profiling'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  nginx:
+    image: nginx:stable
+    depends_on:
+      - php
+    ports:
+      - '127.0.0.1:80:80'
+    volumes:
+      - './src:/var/www/html'
+    configs:
+      - source: http_conf
+        target: '/etc/nginx/conf.d/default.conf'
+  mysql:
+    image: mysql:8
+    ports:
+      - '127.0.0.1:3306:3306'
+    volumes:
+      - './docker/volumes/mysql:/var/lib/mysql'
+    configs:
+      - source: mysql_conf
+        target: '/etc/mysql/conf.d/default.conf'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  phpmyadmin:
+    image: phpmyadmin:latest
+    depends_on:
+      - mysql
+    ports:
+      - '127.0.0.1:8081:80'
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_PMADB: "phpmyadmin"
+      PMA_QUERYHISTORYDB: true
+      PMA_HOST: mysql
+    #profiles:
+    #  - donotstart
+  node:
+    image: node:latest
+    ports:
+      - '127.0.0.1:5173:5173'
+    volumes:
+      - './src:/var/www/html'
+      - './docker/volumes/node/.npmrc:/root/.npmrc'
+    working_dir: '/var/www/html'
+    command: 'npm run dev --debug'
+    profiles:
+      - donotstart
+  mailhog:
+    image: mailhog/mailhog:latest
+    logging:
+      driver: 'none'  # disable saving logs
+    ports:
+      - '127.0.0.1:1025:1025' # smtp server
+      - '127.0.0.1:8025:8025' # web ui
+    profiles:
+      - donotstart
+configs:
+  http_conf:
+    file: './docker/nginx/conf.d/default.conf'
+  mysql_conf:
+    file: './docker/mysql/conf.d/default.conf'
