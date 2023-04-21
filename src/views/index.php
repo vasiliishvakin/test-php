@@ -8,13 +8,15 @@
             src="https://code.jquery.com/jquery-3.6.4.js"
             integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E="
             crossorigin="anonymous"></script>
+
+    <script src="/js/places.js"></script>
 </head>
 <body>
 
 <div class="form" style="border: 1px solid black;">
     <form id="search" method="GET" , enctype="multipart/form-data" action="/">
         <input type="hidden" name="action">
-        <select name="place">
+        <select name="place" id="place">
             <option>Please select place</option>
             <?php
             /** @var array $places */
@@ -24,11 +26,10 @@
             ?>
         </select>
 
-        <input type="text" name="length">
-        <input type="submit">
+        <input type="text" name="length" id="length">
     </form>
 </div>
-<div class="results" style="border: 1px solid black;">
+<div class="results" id="results" style="border: 1px solid black;">
     <?php
     if (isset($nearest)) {
         /** @var array $nearest */

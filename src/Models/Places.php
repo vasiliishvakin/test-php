@@ -35,24 +35,8 @@ class Places
         return $this->places;
     }
 
-    /**
-     * Calculates the great-circle distance between two points, with
-     * the Vincenty formula.
-     * @param float $latitudeFrom Latitude of start point in [deg decimal]
-     * @param float $longitudeFrom Longitude of start point in [deg decimal]
-     * @param float $latitudeTo Latitude of target point in [deg decimal]
-     * @param float $longitudeTo Longitude of target point in [deg decimal]
-     * @param float $earthRadius Mean earth radius in [m]
-     * @return float Distance between points in [m] (same as earthRadius)
-     */
-    public function calcDestByPoints($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo ):float
+    public function calcDestByPoints($latFrom, $lonFrom, $latTo, $lonTo ):float
     {
-        // convert from degrees to radians
-        $latFrom = ($latitudeFrom);
-        $lonFrom = ($longitudeFrom);
-        $latTo = ($latitudeTo);
-        $lonTo = ($longitudeTo);
-
         $lonDelta = $lonTo - $lonFrom;
         $a = pow(cos($latTo) * sin($lonDelta), 2) +
             pow(cos($latFrom) * sin($latTo) - sin($latFrom) * cos($latTo) * cos($lonDelta), 2);

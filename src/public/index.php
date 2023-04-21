@@ -5,29 +5,29 @@ require_once __DIR__ . "/../Models/Places.php";
 const CSV_DATA = __DIR__ . "/../data/places.csv";
 
 
-function run():void {
+function main():void {
     $placesProcessor = new \Vasiliishvakin\PhpTest\Models\Places();
     $placesProcessor->loadFromCSV(CSV_DATA);
     $places = $placesProcessor->getPlaces();
 
-    if (!isset($_GET["action"])) {
+    $queries = [];
+    parse_str($_SERVER['QUERY_STRING'], $queries);
 
-
-
-        //var_dump($places);
+    if (!isset($queries["place"])) {
+        require_once __DIR__ . "/../views/index.php";
     } else {
-        $placeId = (int)$_GET["place"];
+        $placeId = (int)$queries["place"];
         $place = $places[$placeId];
-        $length = (int) $_GET["length"];
+        $length = (int) $queries["length"];
 
         $nearest = $placesProcessor->findNearests($place, $length);
-        var_dump($nearest);
-    }
-    require_once __DIR__ . "/../views/index.php";
 
+        require_once __DIR__ . "/../views/nearest.php";
+    }
 }
 
-run();
+//I am know it is not c++, sorry.
+main();
 
 
 
