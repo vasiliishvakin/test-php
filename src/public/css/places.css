@@ -1,0 +1,8 @@
+.form {
+    display: flex;
+    flex-direction: row;
+}
+
+.slider {
+    width: 300px;
+}
